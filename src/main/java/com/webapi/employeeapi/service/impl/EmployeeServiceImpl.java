@@ -49,7 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			String like = "%" + q.toLowerCase() + "%";
 			return cb.or(
 				cb.like(cb.lower(root.get("name")),like),
-				cb.like(cb.lower(root.get("email)")), like),
+				cb.like(cb.lower(root.get("email")), like),
 				cb.like(cb.lower(root.get("department")), like)
 					);		
 		};
