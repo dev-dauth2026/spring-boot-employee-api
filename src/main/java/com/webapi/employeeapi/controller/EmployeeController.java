@@ -18,7 +18,7 @@ import com.webapi.employeeapi.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/employee")
+@RequestMapping("/api/employees")
 @RequiredArgsConstructor
 public class EmployeeController {
 	
