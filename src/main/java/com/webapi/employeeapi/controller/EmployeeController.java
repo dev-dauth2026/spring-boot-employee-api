@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.webapi.employeeapi.dto.EmployeeDto;
 import com.webapi.employeeapi.service.EmployeeService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -35,12 +36,12 @@ public class EmployeeController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<EmployeeDto> create(@RequestBody EmployeeDto dto){
+	public ResponseEntity<EmployeeDto> create(@Valid @RequestBody EmployeeDto dto){
 		return ResponseEntity.ok(employeeService.createEmployee(dto));
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<EmployeeDto> update(@PathVariable Long id, @RequestBody EmployeeDto dto){
+	public ResponseEntity<EmployeeDto> update(@PathVariable Long id, @Valid @RequestBody EmployeeDto dto){
 		return ResponseEntity.ok(employeeService.updateEmployee(id, dto));
 	}
 	
