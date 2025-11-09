@@ -3,6 +3,9 @@ package com.webapi.employeeapi.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.webapi.employeeapi.dto.EmployeeDto;
@@ -37,6 +40,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return employeeRepository.findAll()
 				.stream().map(this::mapToDto)
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public Page<EmployeeDto> getEmployees(Pageable pageable, String q){
+		Specification<Employee> spec = (root, query, cb) -> {
+			if (q == null || q.isBlank()) return null;
+			String like = "%" + q.toLowerCase() + "%";
+			return cb.or(
+				cb.like(cb.lower(root.get("name")),like),
+				cb.like(cb.lower(root.get("email)")), like),
+				cb.like(cb.lower(root.get("department")), like)
+					);		
+		};
+		return employeeRepository.findAll(spec, pageable).map(this::mapToDto);
 	}
 	
 	@Override
