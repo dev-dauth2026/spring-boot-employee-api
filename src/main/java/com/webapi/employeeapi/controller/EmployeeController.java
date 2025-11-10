@@ -45,7 +45,13 @@ public class EmployeeController {
 	
 	@PostMapping
 	public ResponseEntity<EmployeeDto> create(@Valid @RequestBody EmployeeDto dto){
-		return ResponseEntity.ok(employeeService.createEmployee(dto));
+		EmployeeDto created = employeeService.createEmployee(dto);
+		
+		//Build Location hearder: /api/employees/{id}
+		java.net.URI location = java.net.URI.create("/api/employees/" + created.getId());
+		
+		// Return 201 Created with the new record body
+		return ResponseEntity.created(location).body(created);
 	}
 	
 	@PutMapping("/{id}")
