@@ -23,7 +23,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private final EmployeeRepository employeeRepository;
 	
 	private EmployeeDto mapToDto(Employee e) {
-		return new EmployeeDto(e.getId(), e.getName(), e.getEmail(), e.getDepartment());
+		return EmployeeDto.builder()
+			      .id(e.getId())
+			      .name(e.getName())
+			      .email(e.getEmail())
+			      .department(e.getDepartment())
+			      .createdAt(e.getCreatedAt())   
+			      .updatedAt(e.getUpdatedAt())  
+			      .build();
 	}
 	
 	private Employee mapToEntity(EmployeeDto dto) {

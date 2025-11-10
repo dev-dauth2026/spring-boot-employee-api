@@ -1,5 +1,10 @@
 package com.webapi.employeeapi.dto;
 
+import java.time.Instant;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -24,5 +29,11 @@ public class EmployeeDto {
 	
 	@NotBlank(message = "department is required")
 	private String department;
+	
+	@JsonProperty(access = Access.READ_ONLY)
+	 private Instant createdAt;
+
+	 @JsonProperty(access = Access.READ_ONLY)
+	 private Instant updatedAt;
 
 }
