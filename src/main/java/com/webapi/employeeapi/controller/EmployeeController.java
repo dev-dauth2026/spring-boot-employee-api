@@ -1,7 +1,6 @@
 package com.webapi.employeeapi.controller;
 
-import java.util.List;
-
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.webapi.employeeapi.dto.EmployeeDto;
 import com.webapi.employeeapi.service.EmployeeService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Employees", description = "Operations for managing employees")
 @RestController
 @RequestMapping("/api/employees")
 @RequiredArgsConstructor
@@ -35,9 +38,15 @@ public class EmployeeController {
 //		return ResponseEntity.ok(employeeService.getAllEmployees());
 //	}
 	
+	@Operation(
+	        summary = "List employees (paginated)",
+	        description = "Returns a page of employees. Supports pagination, sorting, and optional text search across name, email, and department."
+	    )
 	@GetMapping
 	public ResponseEntity<Page<EmployeeDto>> page(
-			@PageableDefault(page = 0, size = 5, sort = "name") Pageable pageable, 
+			@ParameterObject @PageableDefault(page = 0, size = 5, sort = "name") Pageable pageable, 
+			
+			@Parameter(description = "Free text query to match name/email/department (case-insensitive)")
 			@RequestParam(required = false) String q){
 		
 		// Cap the size to  avoid abuse (max 50)
@@ -49,13 +58,18 @@ public class EmployeeController {
 		return ResponseEntity.ok(employeeService.getEmployees(safePageable, q));
 	}
 	
+	@Operation(summary = "Get employee by ID")
 	@GetMapping("/{id}")
-	public ResponseEntity<EmployeeDto> getById(@PathVariable Long id){
+	public ResponseEntity<EmployeeDto> getById(
+			@Parameter(description = "Employee ID") @PathVariable Long id){
 		return ResponseEntity.ok(employeeService.getEmployeeById(id));
 	}
 	
+	@Operation(summary = "Create a new employee")
 	@PostMapping
-	public ResponseEntity<EmployeeDto> create(@Valid @RequestBody EmployeeDto dto){
+	public ResponseEntity<EmployeeDto> create(
+			@Parameter(description = "Employee payload (name, email, department)", required = true)
+			@Valid @RequestBody EmployeeDto dto){
 		EmployeeDto created = employeeService.createEmployee(dto);
 		
 		//Build Location hearder: /api/employees/{id}
@@ -65,13 +79,19 @@ public class EmployeeController {
 		return ResponseEntity.created(location).body(created);
 	}
 	
+	@Operation(summary = "Update an existing employee")
 	@PutMapping("/{id}")
-	public ResponseEntity<EmployeeDto> update(@PathVariable Long id, @Valid @RequestBody EmployeeDto dto){
+	public ResponseEntity<EmployeeDto> update(
+			@Parameter(description = "Employee ID") @PathVariable Long id, 
+			@Parameter(description = "Employee payload (name, email, department)", required = true)
+			@Valid @RequestBody EmployeeDto dto){
 		return ResponseEntity.ok(employeeService.updateEmployee(id, dto));
 	}
 	
+	@Operation(summary = "Delete an employee")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id){
+	public ResponseEntity<Void> delete(
+			@Parameter(description = "Employee ID") @PathVariable Long id){
 		employeeService.deleteEmployee(id);
 		return ResponseEntity.noContent().build();
 	}
