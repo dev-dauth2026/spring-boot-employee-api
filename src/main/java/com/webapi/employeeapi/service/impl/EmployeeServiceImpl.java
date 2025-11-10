@@ -1,8 +1,5 @@
 package com.webapi.employeeapi.service.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -42,12 +39,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 				.build();
 	}
 	
-	@Override
-	public List<EmployeeDto> getAllEmployees() {
-		return employeeRepository.findAll()
-				.stream().map(this::mapToDto)
-				.collect(Collectors.toList());
-	}
 	
 	@Override
 	public Page<EmployeeDto> getEmployees(Pageable pageable, String q){

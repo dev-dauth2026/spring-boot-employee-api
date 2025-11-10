@@ -30,12 +30,12 @@ public class EmployeeController {
 	
 	private final EmployeeService employeeService;
 	
-	@GetMapping
-	public ResponseEntity<List<EmployeeDto>> getAll(){
-		return ResponseEntity.ok(employeeService.getAllEmployees());
-	}
+//	@GetMapping
+//	public ResponseEntity<List<EmployeeDto>> getAll(){
+//		return ResponseEntity.ok(employeeService.getAllEmployees());
+//	}
 	
-	@GetMapping("/page")
+	@GetMapping
 	public ResponseEntity<Page<EmployeeDto>> page(
 			@PageableDefault(page = 0, size = 5, sort = "name") Pageable pageable, 
 			@RequestParam(required = false) String q){

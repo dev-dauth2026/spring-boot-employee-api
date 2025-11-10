@@ -9,7 +9,6 @@ import com.webapi.employeeapi.dto.EmployeeDto;
 
 public interface EmployeeService {
 	
-	List<EmployeeDto> getAllEmployees();
 	Page<EmployeeDto> getEmployees(Pageable pageable, String q);
 	EmployeeDto getEmployeeById(Long id);
 	EmployeeDto createEmployee(EmployeeDto employee);
