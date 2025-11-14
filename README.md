@@ -1,6 +1,6 @@
-# Employee API
+# Employee API (Spring Boot 3 + PostgreSQL)
 
-A clean, real-world REST API built with Spring Boot 3 and PostgreSQL, featuring layered architecture, DTO validation, pagination, search, and interactive Swagger (OpenAPI 3.1) documentation.
+A clean, real-world REST API built with **Spring Boot 3** and **PostgreSQL**, featuring layered architecture, DTO validation, pagination, search, audit timestamps, Swagger/OpenAPI documentation, and production‑grade security structure prepared with Spring Security + JWT (Keycloak‑ready).
 
 ## Tech Stack
 | Layer | Technology |
@@ -9,113 +9,63 @@ A clean, real-world REST API built with Spring Boot 3 and PostgreSQL, featuring 
 | Language | Java 21 |
 | Database | PostgreSQL 14+ |
 | ORM / JPA | Spring Data JPA + Hibernate 6 |
-| Validation | Jakarta Validation (Bean Validation) |
-| Documentation | SpringDoc OpenAPI 2.6.0 (Swagger UI) |
+| Validation | Jakarta Validation |
+| Documentation | SpringDoc OpenAPI 2.6.0 |
+| Security (prepared) | Spring Security + OAuth2 Resource Server (JWT) |
 | Build Tool | Maven |
-| Utilities | Lombok for boilerplate reduction |
+| Utilities | Lombok |
 
 ## Architecture
 ```
 Controller  →  Service  →  Repository  →  Database
         ↑
-     DTOs + Validation
+   DTOs + Validation + Global Exception Handling
 ```
 
-- Controller – Handles HTTP requests & responses  
-- Service – Business logic and validation  
-- Repository – Database operations (Spring Data JPA)  
-- DTOs – Request/response payloads with validation rules  
-
 ## Features
-- CRUD operations for Employees  
-- Pagination + search by `name`, `email`, `department`  
-- Automatic audit timestamps (`createdAt`, `updatedAt`)  
-- Centralized validation errors (`@Valid` + `@ControllerAdvice`)  
-- Swagger UI for live API exploration  
-- Clean DTO mapping → Entity separation  
-- Real PostgreSQL database configuration  
+- CRUD operations for Employees
+- Pagination & searching by name/email/department
+- Validation with `@Valid`
+- REST‑friendly error responses
+- Automatic audit timestamps (`createdAt`, `updatedAt`)
+- DTO → Entity separation
+- Swagger UI documentation
+- PostgreSQL configuration
+- Security structure ready for production using JWT (Keycloak compatible)
 
 ## Setup & Run
 
-### Prerequisites
-- Java 21 or later  
-- Maven 3.9+  
-- PostgreSQL 14+ (running locally)
-
-### Database
-Create a database named `employee_db`.
-
-```sql
+### Database Setup
+```
 CREATE DATABASE employee_db;
 ```
 
-(Optional) update username/password in  
-`src/main/resources/application.properties`:
-```properties
+### Configure PostgreSQL
+`src/main/resources/application.properties`
+
+```
 spring.datasource.url=jdbc:postgresql://localhost:5432/employee_db
 spring.datasource.username=postgres
 spring.datasource.password=your_password
 ```
 
-### Run the application
-```bash
+### Run
+```
 mvn spring-boot:run
 ```
-Or build a JAR:
-```bash
+
+Or:
+```
 mvn clean package
 java -jar target/employeeapi-0.0.1-SNAPSHOT.jar
 ```
 
-### Access the API
-| Type | URL |
-|------|-----|
-| Base API | http://localhost:8080/api/employees |
-| Swagger UI | http://localhost:8080/swagger-ui/index.html |
-| OpenAPI JSON | http://localhost:8080/v3/api-docs |
+## Swagger Documentation
+- Swagger UI → http://localhost:8080/swagger-ui/index.html  
+- OpenAPI JSON → http://localhost:8080/v3/api-docs  
 
-## API Overview
-
-| Method | Endpoint | Description |
-|:--:|:--|:--|
-| GET | /api/employees | Paginated list + optional search (`?q=...`) |
-| GET | /api/employees/{id} | Get employee by ID |
-| POST | /api/employees | Create a new employee |
-| PUT | /api/employees/{id} | Update existing employee |
-| DELETE | /api/employees/{id} | Delete an employee |
-
-## Example Request
-
-**POST** `/api/employees`
-```json
-{
-  "name": "Alice Smith",
-  "email": "alice.smith@example.com",
-  "department": "Engineering"
-}
+### OpenAPI Global Metadata Example
 ```
-
-**Response 201 Created**
-```json
-{
-  "id": 1,
-  "name": "Alice Smith",
-  "email": "alice.smith@example.com",
-  "department": "Engineering",
-  "createdAt": "2025-11-10T14:20:00Z",
-  "updatedAt": "2025-11-10T14:20:00Z"
-}
-```
-
-## Learning Highlights
-- Pagination & search with `Pageable` and `Specification`
-- DTO validation using `@NotBlank`, `@Email`
-- Swagger (OpenAPI) documentation via annotations
-- Database integration with JPA & PostgreSQL
-- Layered code organization for clean scalability
-
-## Swagger Configuration Example
-```java
 @OpenAPIDefinition(
     info = @Info(
         title = "Employee API",
@@ -126,4 +76,66 @@ java -jar target/employeeapi-0.0.1-SNAPSHOT.jar
 )
 ```
 
+## API Endpoints
 
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/employees | Paginated list + search |
+| GET | /api/employees/{id} | Get employee by ID |
+| POST | /api/employees | Create employee |
+| PUT | /api/employees/{id} | Update employee |
+| DELETE | /api/employees/{id} | Delete employee |
+
+### Example
+POST `/api/employees`
+```
+{
+  "name": "Alice Smith",
+  "email": "alice.smith@example.com",
+  "department": "Engineering"
+}
+```
+
+Response:
+```
+{
+  "id": 1,
+  "name": "Alice Smith",
+  "email": "alice.smith@example.com",
+  "department": "Engineering",
+  "createdAt": "2025-11-10T14:20:00Z",
+  "updatedAt": "2025-11-10T14:20:00Z"
+}
+```
+
+## Security (Configured for Production Use)
+
+Security is implemented following real enterprise practice:
+
+- Spring Boot as **OAuth2 Resource Server**
+- JWT validation via `issuer-uri`
+- Role-based access: Only ADMIN can manage employees
+- Audience validation for tokens
+- Keycloak-ready configuration (can run locally using Docker)
+- CORS configuration externalized
+
+Local example (disabled unless issuer-uri active):
+
+```
+spring.security.oauth2.resourceserver.jwt.issuer-uri=http://localhost:8081/realms/employee-api
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:8081/realms/employee-api/protocol/openid-connect/certs
+```
+
+## Learning Highlights
+- How to design a layered API architecture
+- Pageable search with Spring Data
+- Swagger/OpenAPI integration
+- Real PostgreSQL integration
+- Production-level security preparation
+- Clean commit practices
+
+## Next Steps (Optional Enhancements)
+- Add Keycloak login flow
+- CI/CD pipeline (GitHub Actions)
+- Add integration tests (Testcontainers)
+- Deploy API to AWS/Render/Railway
